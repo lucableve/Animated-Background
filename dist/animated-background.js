@@ -1,6 +1,6 @@
 //const
 const Debug_Prefix = "Animated Background DEBUG: ";
-const Log_Prefix = "Animated Background: "
+const Log_Prefix = "Animated Background: ";
 
 //globals
 var Root;
@@ -26,8 +26,7 @@ let Previous_Config;
 function STATUS_MESSAGE(message, force) {
   if (!Debug_Mode) {
     console.log(Log_Prefix + message);
-  }
-  else {
+  } else {
     if (force) {
       console.log(Debug_Prefix + message);
     }
@@ -46,7 +45,8 @@ function DEBUG_MESSAGE(message, object, only_if_view_not_loaded) {
   }
 }
 
-function randomIntFromInterval(min, max) { // min and max included
+function randomIntFromInterval(min, max) {
+  // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -56,8 +56,12 @@ function getVars() {
   Root = Root && Root.shadowRoot;
   Root = Root && Root.querySelector("home-assistant-main");
   Root = Root && Root.shadowRoot;
-//  Root = Root && Root.querySelector("app-drawer-layout partial-panel-resolver");
-  Root = Root && Root.querySelector("app-drawer-layout partial-panel-resolver, ha-drawer partial-panel-resolver");
+  //  Root = Root && Root.querySelector("app-drawer-layout partial-panel-resolver");
+  Root =
+    Root &&
+    Root.querySelector(
+      "app-drawer-layout partial-panel-resolver, ha-drawer partial-panel-resolver"
+    );
   Root = (Root && Root.shadowRoot) || Root;
   Root = Root && Root.querySelector("ha-panel-lovelace");
   if (Root) {
@@ -118,7 +122,7 @@ function deviceIncluded(element, index, array) {
 
 //return the currently selected lovelace view
 function currentViewPath() {
-  return window.location.pathname.split('/')[2];
+  return window.location.pathname.split("/")[2];
 }
 
 //return group config by name if it exists
@@ -128,7 +132,7 @@ function getGroupConfig(name) {
     return { enabled: false, reason: "current group is set to 'none'" };
   }
   if (Animated_Config.groups) {
-    Animated_Config.groups.forEach(group => {
+    Animated_Config.groups.forEach((group) => {
       if (group.name) {
         if (group.name == name) {
           if (group.config) {
@@ -136,7 +140,7 @@ function getGroupConfig(name) {
           }
         }
       }
-    })
+    });
   }
   return return_config;
 }
@@ -154,12 +158,11 @@ function currentConfig() {
     }
 
     if (Animated_Config.views) {
-      Animated_Config.views.forEach(view => {
+      Animated_Config.views.forEach((view) => {
         if (view.path == current_view_path) {
           if (view.config) {
             return_config = view.config;
-          }
-          else {
+          } else {
             STATUS_MESSAGE("Error, defined view has no config", true);
           }
         }
@@ -172,8 +175,7 @@ function currentConfig() {
       for (var i = 0; Lovelace.config.views.length > i; i++) {
         if (Lovelace.config.views[i].path == current_view_path) {
           current_view_config = Lovelace.config.views[i];
-        }
-        else {
+        } else {
           if (i.toString() == current_view_path.toString()) {
             current_view_config = Lovelace.config.views[i];
           }
@@ -181,7 +183,9 @@ function currentConfig() {
       }
 
       if (current_view_config) {
-        var potential_config = getGroupConfig(current_view_config.animated_background);
+        var potential_config = getGroupConfig(
+          current_view_config.animated_background
+        );
         if (potential_config) {
           return_config = potential_config;
         }
@@ -194,11 +198,19 @@ function currentConfig() {
         var current_url = return_config.state_url[current_state];
         if (current_url) {
           if (current_url == "none") {
-            return_config = { enabled: false, reason: "current state('" + current_state + "') state_url is set to 'none'", entity: return_config.entity, default_url: return_config.default_url, state_url: return_config.state_url };
+            return_config = {
+              enabled: false,
+              reason:
+                "current state('" +
+                current_state +
+                "') state_url is set to 'none'",
+              entity: return_config.entity,
+              default_url: return_config.default_url,
+              state_url: return_config.state_url,
+            };
           }
         }
       }
-
     }
   }
   return return_config;
@@ -208,7 +220,12 @@ function currentConfig() {
 function enabled() {
   var temp_enabled = false;
   if (Animated_Config) {
-    if (Animated_Config.default_url || Animated_Config.entity || Animated_Config.views || Animated_Config.groups) {
+    if (
+      Animated_Config.default_url ||
+      Animated_Config.entity ||
+      Animated_Config.views ||
+      Animated_Config.groups
+    ) {
       temp_enabled = true;
     }
   }
@@ -238,21 +255,36 @@ function enabled() {
   }
 
   if (Animated_Config.excluded_users) {
-    if (Animated_Config.excluded_users.map(username => username.toLowerCase()).includes(Haobj.user.name.toLowerCase())) {
+    if (
+      Animated_Config.excluded_users
+        .map((username) => username.toLowerCase())
+        .includes(Haobj.user.name.toLowerCase())
+    ) {
       if (temp_enabled) {
-        DEBUG_MESSAGE("Current user: " + Haobj.user.name + " is excluded", null, true);
+        DEBUG_MESSAGE(
+          "Current user: " + Haobj.user.name + " is excluded",
+          null,
+          true
+        );
         temp_enabled = false;
       }
     }
   }
 
   if (Animated_Config.included_users) {
-    if (Animated_Config.included_users.map(username => username.toLowerCase()).includes(Haobj.user.name.toLowerCase())) {
+    if (
+      Animated_Config.included_users
+        .map((username) => username.toLowerCase())
+        .includes(Haobj.user.name.toLowerCase())
+    ) {
       temp_enabled = true;
-    }
-    else {
+    } else {
       if (temp_enabled) {
-        DEBUG_MESSAGE("Current user: " + Haobj.user.name + " is not included", null, true);
+        DEBUG_MESSAGE(
+          "Current user: " + Haobj.user.name + " is not included",
+          null,
+          true
+        );
         temp_enabled = false;
       }
     }
@@ -261,8 +293,7 @@ function enabled() {
   if (Animated_Config.included_devices) {
     if (Animated_Config.included_devices.some(deviceIncluded)) {
       temp_enabled = true;
-    }
-    else {
+    } else {
       if (temp_enabled) {
         DEBUG_MESSAGE("Current device is not included", null, true);
         temp_enabled = false;
@@ -281,21 +312,36 @@ function enabled() {
   }
 
   if (current_config.excluded_users) {
-    if (current_config.excluded_users.map(username => username.toLowerCase()).includes(Haobj.user.name.toLowerCase())) {
+    if (
+      current_config.excluded_users
+        .map((username) => username.toLowerCase())
+        .includes(Haobj.user.name.toLowerCase())
+    ) {
       if (temp_enabled) {
-        DEBUG_MESSAGE("Current user: " + Haobj.user.name + " is excluded", null, true);
+        DEBUG_MESSAGE(
+          "Current user: " + Haobj.user.name + " is excluded",
+          null,
+          true
+        );
         temp_enabled = false;
       }
     }
   }
 
   if (current_config.included_users) {
-    if (current_config.included_users.map(username => username.toLowerCase()).includes(Haobj.user.name.toLowerCase())) {
+    if (
+      current_config.included_users
+        .map((username) => username.toLowerCase())
+        .includes(Haobj.user.name.toLowerCase())
+    ) {
       temp_enabled = true;
-    }
-    else {
+    } else {
       if (temp_enabled) {
-        DEBUG_MESSAGE("Current user: " + Haobj.user.name + " is not included", null, true);
+        DEBUG_MESSAGE(
+          "Current user: " + Haobj.user.name + " is not included",
+          null,
+          true
+        );
         temp_enabled = false;
       }
     }
@@ -304,8 +350,7 @@ function enabled() {
   if (current_config.included_devices) {
     if (current_config.included_devices.some(deviceIncluded)) {
       temp_enabled = true;
-    }
-    else {
+    } else {
       if (temp_enabled) {
         DEBUG_MESSAGE("Current device is not included", null, true);
         temp_enabled = false;
@@ -341,7 +386,11 @@ function renderBackgroundHTML() {
   var state_url = "";
   var temp_enabled = true;
   //rerender background if entity has changed (to avoid no background refresh if the new entity happens to have the same state)
-  if (current_config && current_config.entity && Previous_Entity != current_config.entity) {
+  if (
+    current_config &&
+    current_config.entity &&
+    Previous_Entity != current_config.entity
+  ) {
     Previous_State = null;
   }
 
@@ -357,59 +406,61 @@ function renderBackgroundHTML() {
       if (current_config.state_url[current_state]) {
         if (Previous_State != current_state) {
           View_Loaded = false;
-          DEBUG_MESSAGE("Configured entity " + current_config.entity + " is now " + current_state, true);
+          DEBUG_MESSAGE(
+            "Configured entity " +
+              current_config.entity +
+              " is now " +
+              current_state,
+            true
+          );
           if (current_config.state_url) {
             var url = current_config.state_url[current_state];
             if (Array.isArray(url)) {
               state_url = url[randomIntFromInterval(0, url.length - 1)];
-            }
-            else {
+            } else {
               state_url = current_config.state_url[current_state];
             }
           }
           Previous_State = current_state;
         }
-      }
-      else {
-        DEBUG_MESSAGE("No state_url found for the current state '" + current_state + "'. Attempting to set default_url")
+      } else {
+        DEBUG_MESSAGE(
+          "No state_url found for the current state '" +
+            current_state +
+            "'. Attempting to set default_url"
+        );
         Previous_State = current_state;
         Previous_Url = null;
         var url = current_config.default_url;
         if (url) {
           if (Array.isArray(url)) {
             state_url = url[randomIntFromInterval(0, url.length - 1)];
-          }
-          else {
+          } else {
             state_url = url;
           }
-        }
-        else {
+        } else {
           if (!current_config.reason) {
-            DEBUG_MESSAGE("No default_url found, restoring lovelace theme")
+            DEBUG_MESSAGE("No default_url found, restoring lovelace theme");
           }
           temp_enabled = false;
         }
       }
-    }
-    else {
+    } else {
       var url = current_config.default_url;
       if (url) {
         if (Array.isArray(url)) {
           state_url = url[randomIntFromInterval(0, url.length - 1)];
-        }
-        else {
+        } else {
           state_url = url;
         }
-      }
-      else {
+      } else {
         if (!current_config.reason) {
-          DEBUG_MESSAGE("No default_url found, restoring lovelace theme")
+          DEBUG_MESSAGE("No default_url found, restoring lovelace theme");
         }
         temp_enabled = false;
       }
     }
-  }
-  else {
+  } else {
     temp_enabled = false;
   }
 
@@ -431,10 +482,9 @@ function renderBackgroundHTML() {
     var video_type = urlIsVideo(state_url);
     var doc_body;
     if (video_type) {
-      doc_body = `<video id='cinemagraph' autoplay='' loop='' preload='' playsinline='' muted='' poster=''><source src='${state_url}' type='video/${video_type}'></video>`
-    }
-    else {
-      doc_body = `<img src='${state_url}'>`
+      doc_body = `<video id='cinemagraph' autoplay='' loop='' preload='' playsinline='' muted='' poster=''><source src='${state_url}' type='video/${video_type}'></video>`;
+    } else {
+      doc_body = `<img src='${state_url}'>`;
     }
     var source_doc = `
     <html>
@@ -498,16 +548,15 @@ function renderBackgroundHTML() {
       }`;
       var div = document.createElement("div");
       div.id = "background-video";
-      div.className = "bg-wrap"
+      div.className = "bg-wrap";
       div.innerHTML = `
      <iframe id="background-iframe" class="bg-video" frameborder="0" srcdoc="${source_doc}"/> 
     `;
       Root.shadowRoot.appendChild(style);
-      Root.shadowRoot.appendChild(div)
+      Root.shadowRoot.appendChild(div);
       Previous_Url = state_url;
-    }
-    else {
-      if (current_config.entity || (Previous_Url != state_url)) {
+    } else {
+      if (current_config.entity || Previous_Url != state_url) {
         if (!current_config.entity) {
           STATUS_MESSAGE("Applying default background", true);
           Previous_Entity = null;
@@ -521,7 +570,10 @@ function renderBackgroundHTML() {
 }
 
 function urlIsVideo(url) {
-  if (url.slice(url.length - 3).toLowerCase() == "mp4" || url.slice(url.length - 4).toLowerCase() == "webm") {
+  if (
+    url.slice(url.length - 3).toLowerCase() == "mp4" ||
+    url.slice(url.length - 4).toLowerCase() == "webm"
+  ) {
     return url.slice(url.length - 3).toLowerCase();
   }
   if (url.slice(url.length - 4).toLowerCase() == "webm") {
@@ -532,13 +584,18 @@ function urlIsVideo(url) {
 
 //removes lovelace theme background
 function removeDefaultBackground(node, current_config) {
-  var background = 'transparent';
+  var background = "transparent";
   if (current_config.background) {
     background = current_config.background;
   }
-  if (node.style.background != background || View_Layout?.style?.background != 'transparent') {
+  if (
+    node.style.background != background ||
+    View_Layout?.style?.background != "transparent"
+  ) {
     node.style.background = background;
-    View_Layout.style.background = 'transparent';
+    if (iew_Layout?.style?.background) {
+      View_Layout.style.background = "transparent";
+    }
   }
 }
 
@@ -563,8 +620,8 @@ function processDefaultBackground(temp_enabled) {
         view_holder = Root.shadowRoot.getElementById("view");
 
         if (view_holder) {
-          view_node_panel = view_holder.querySelector("hui-panel-view")
-          view_node = view_holder.querySelector('hui-view');
+          view_node_panel = view_holder.querySelector("hui-panel-view");
+          view_node = view_holder.querySelector("hui-view");
         }
 
         if (view_node || view_node_panel) {
@@ -575,12 +632,19 @@ function processDefaultBackground(temp_enabled) {
           }
           if (temp_enabled) {
             removeDefaultBackground(iphone_bullshit_fixer, current_config);
-            DEBUG_MESSAGE("Removing view background for configuration:", currentConfig(), true);
-          }
-          else {
+            DEBUG_MESSAGE(
+              "Removing view background for configuration:",
+              currentConfig(),
+              true
+            );
+          } else {
             restoreDefaultBackground(iphone_bullshit_fixer);
             if (current_config && current_config.reason) {
-              DEBUG_MESSAGE("Current config is disabled because " + current_config.reason, null, true);
+              DEBUG_MESSAGE(
+                "Current config is disabled because " + current_config.reason,
+                null,
+                true
+              );
             }
           }
           View_Loaded = true;
@@ -611,12 +675,10 @@ function setDebugMode() {
           alert(navigator.userAgent);
         }
       }
-    }
-    else {
+    } else {
       Debug_Mode = false;
     }
-  }
-  else {
+  } else {
     Debug_Mode = false;
   }
 }
@@ -631,8 +693,7 @@ function run() {
     if (!currentConfig()) {
       if (Debug_Mode) {
         DEBUG_MESSAGE("No configuration found");
-      }
-      else {
+      } else {
         STATUS_MESSAGE("No configuration found");
       }
     }
@@ -655,15 +716,12 @@ function run() {
               renderBackgroundHTML();
             }
           }
-
-        }
-        else {
+        } else {
           renderBackgroundHTML();
         }
-      }
+      },
     });
-  }
-  else {
+  } else {
     if (!Loaded) {
       renderBackgroundHTML();
     }
@@ -678,7 +736,7 @@ function run() {
     characterData: true,
     childList: true,
     subtree: true,
-    characterDataOldValue: true
+    characterDataOldValue: true,
   });
 
   Hui_Observer.disconnect();
@@ -686,7 +744,7 @@ function run() {
     characterData: true,
     childList: true,
     subtree: true,
-    characterDataOldValue: true
+    characterDataOldValue: true,
   });
 
   Panel_Observer.disconnect();
@@ -694,14 +752,14 @@ function run() {
     characterData: true,
     childList: true,
     subtree: true,
-    characterDataOldValue: true
+    characterDataOldValue: true,
   });
 }
 
 function restart() {
   clearInterval(wait_interval);
   var wait_interval = setInterval(() => {
-    getVars()
+    getVars();
     if (Hui) {
       Previous_Entity = null;
       Previous_State = null;
