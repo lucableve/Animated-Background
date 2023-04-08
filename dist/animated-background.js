@@ -593,7 +593,7 @@ function removeDefaultBackground(node, current_config) {
     View_Layout?.style?.background != "transparent"
   ) {
     node.style.background = background;
-    if (iew_Layout?.style?.background) {
+    if (View_Layout?.style?.background) {
       View_Layout.style.background = "transparent";
     }
   }
@@ -601,7 +601,9 @@ function removeDefaultBackground(node, current_config) {
 
 //restores lovelace theme background
 function restoreDefaultBackground(node) {
-  View_Layout.style.background = null;
+  if (View_Layout?.style?.background) {
+    View_Layout.style.background = null;
+  }
   node.style.background = null;
 }
 
